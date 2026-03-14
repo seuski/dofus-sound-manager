@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dofus Sound Manager</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Nunito:wght@400;600;700&display=swap');
+
+  :root {
+    --bg: #0f1118;
+    --bg2: #161925;
+    --bg3: #1e2333;
+    --gold: #c8a824;
+    --gold2: #f0c840;
+    --gold-dark: #8a6c10;
+    --green: #7bc843;
+    --green-dark: #4a8c1c;
+    --text: #d4cfc0;
+    --text-muted: #7a7a9a;
+    --border: #2a2f45;
+    --border-gold: #5a4810;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: linear-gradient(180deg, #0a0c12 0%, #161925 100%);
+    border-bottom: 2px solid var(--border-gold);
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(200,168,36,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .header-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 60px 24px 50px;
+    text-align: center;
+    position: relative;
+  }
+
+  .header-logo {
+    width: 96px;
+    height: 96px;
+    margin: 0 auto 24px;
+    filter: drop-shadow(0 0 20px rgba(200,168,36,0.4));
+  }
+
+  header h1 {
+    font-family: 'Cinzel', serif;
+    font-size: 2.6rem;
+    font-weight: 700;
+    color: var(--gold2);
+    letter-spacing: 2px;
+    text-shadow: 0 0 30px rgba(200,168,36,0.3);
+    margin-bottom: 12px;
+  }
+
+  header p.tagline {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    margin-bottom: 36px;
+  }
+
+  .dl-btn {
+    display: inline-block;
+    background: linear-gradient(180deg, var(--green) 0%, var(--green-dark) 100%);
+    color: #fff;
+    font-family: 'Cinzel', serif;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    padding: 16px 48px;
+    border-radius: 4px;
+    text-decoration: none;
+    border: 1px solid rgba(255,255,255,0.2);
+    box-shadow: 0 4px 20px rgba(123,200,67,0.3), inset 0 1px 0 rgba(255,255,255,0.2);
+    transition: all 0.2s;
+  }
+
+  .dl-btn:hover {
+    background: linear-gradient(180deg, #8fd64e 0%, #5a9820 100%);
+    box-shadow: 0 6px 28px rgba(123,200,67,0.45);
+    transform: translateY(-1px);
+  }
+
+  .version-badge {
+    display: inline-block;
+    margin-left: 16px;
+    background: var(--border);
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    padding: 4px 12px;
+    border-radius: 20px;
+    vertical-align: middle;
+  }
+
+  /* ── NAV ── */
+  nav {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  nav ul {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px;
+    list-style: none;
+    display: flex;
+    gap: 0;
+  }
+
+  nav a {
+    display: block;
+    padding: 16px 20px;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    transition: color 0.2s;
+    border-bottom: 2px solid transparent;
+  }
+
+  nav a:hover {
+    color: var(--gold2);
+    border-bottom-color: var(--gold2);
+  }
+
+  /* ── SECTIONS ── */
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  section {
+    padding: 72px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-title {
+    font-family: 'Cinzel', serif;
+    font-size: 1.6rem;
+    color: var(--gold2);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--border-gold), transparent);
+  }
+
+  .section-sub {
+    color: var(--text-muted);
+    margin-bottom: 40px;
+    font-size: 0.95rem;
+  }
+
+  /* ── HOW IT WORKS ── */
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+  }
+
+  .step {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-top: 2px solid var(--gold-dark);
+    border-radius: 4px;
+    padding: 24px 20px;
+    text-align: center;
+  }
+
+  .step-num {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--gold-dark);
+    color: var(--gold2);
+    font-family: 'Cinzel', serif;
+    font-size: 1rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+  }
+
+  .step h3 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+
+  .step p {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  /* ── SCREENSHOTS ── */
+  .screenshots {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  .screenshot {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .screenshot-placeholder {
+    aspect-ratio: 16/10;
+    background: var(--bg2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .screenshot p {
+    padding: 12px 16px;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+
+  /* ── CHANGELOG ── */
+  .changelog-entry {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--gold-dark);
+    border-radius: 0 4px 4px 0;
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+
+  .changelog-entry .ver {
+    font-family: 'Cinzel', serif;
+    font-size: 1rem;
+    color: var(--gold2);
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .changelog-entry .date {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+  }
+
+  .changelog-entry ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .changelog-entry li {
+    font-size: 0.9rem;
+    color: var(--text);
+    padding-left: 20px;
+    position: relative;
+  }
+
+  .changelog-entry li::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: var(--green);
+  }
+
+  /* ── FAQ ── */
+  .faq-item {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    margin-bottom: 12px;
+    overflow: hidden;
+  }
+
+  .faq-q {
+    padding: 18px 20px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--gold);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+  }
+
+  .faq-q:hover { background: rgba(200,168,36,0.05); }
+
+  .faq-q .arrow {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    transition: transform 0.2s;
+  }
+
+  .faq-q.open .arrow { transform: rotate(180deg); }
+
+  .faq-a {
+    display: none;
+    padding: 0 20px 18px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.7;
+    border-top: 1px solid var(--border);
+  }
+
+  .faq-a.show { display: block; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--bg2);
+    border-top: 2px solid var(--border-gold);
+    padding: 40px 24px;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+  }
+
+  footer a { color: var(--gold); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+
+  .warning-box {
+    background: rgba(200,168,36,0.06);
+    border: 1px solid var(--border-gold);
+    border-radius: 4px;
+    padding: 16px 20px;
+    margin-top: 24px;
+    font-size: 0.88rem;
+    color: var(--text-muted);
+  }
+
+  .warning-box strong { color: var(--gold); }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <img src="dofus_logo.png" alt="Logo Dofus" class="header-logo">
+    <h1>Dofus Sound Manager</h1>
+    <p class="tagline">Redécouvrez Dofus avec les musiques de votre version préférée — 1.29 ou 2.0</p>
+    <a href="https://github.com/seuski/dofus-sound-manager/releases/latest/download/DofusSoundManager_Setup.exe" class="dl-btn">
+      ⬇ Télécharger
+    </a>
+    <span class="version-badge">v1.1 — Gratuit</span>
+    <div class="warning-box">
+      <strong>Note :</strong> Windows peut afficher un avertissement de sécurité. Cliquez sur <strong>"Informations complémentaires"</strong> puis <strong>"Exécuter quand même"</strong>. Ce message est normal pour tout logiciel indépendant non signé.
+    </div>
+  </div>
+</header>
+
+<!-- NAV -->
+<nav>
+  <ul>
+    <li><a href="#comment">Comment ça marche</a></li>
+    <li><a href="#screenshots">Aperçu</a></li>
+    <li><a href="#changelog">Changelog</a></li>
+    <li><a href="#faq">FAQ</a></li>
+  </ul>
+</nav>
+
+<!-- COMMENT ÇA MARCHE -->
+<section id="comment">
+  <div class="container">
+    <h2 class="section-title">Comment ça marche</h2>
+    <p class="section-sub">Simple à utiliser, aucune configuration technique requise.</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h3>Installez</h3>
+        <p>Téléchargez et lancez l'installeur. Tout se configure automatiquement.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h3>Coupez la musique Dofus</h3>
+        <p>Dans Dofus, allez dans Options → Son et mettez le curseur Musique à 0. Les effets sonores restent actifs.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h3>Choisissez votre version</h3>
+        <p>Sélectionnez 1.29 ou 2.0 selon vos préférences nostalgiques.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <h3>Activez</h3>
+        <p>Cliquez sur Activer, entrez votre MapId actuel (/mapid dans le chat Dofus) et profitez.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <h3>Jouez !</h3>
+        <p>La musique change automatiquement selon la zone où vous vous trouvez. Combats, donjons, zones — tout est géré.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SCREENSHOTS -->
+<section id="screenshots">
+  <div class="container">
+    <h2 class="section-title">Aperçu</h2>
+    <p class="section-sub">L'interface dans le style Dofus, compacte et toujours au premier plan.</p>
+    <div class="screenshots">
+      <div class="screenshot">
+        <div class="screenshot-placeholder">[ Screenshot interface principale ]</div>
+        <p>Interface principale — version 1.29 active</p>
+      </div>
+      <div class="screenshot">
+        <div class="screenshot-placeholder">[ Screenshot en jeu ]</div>
+        <p>Fenêtre flottante pendant une session de jeu</p>
+      </div>
+      <div class="screenshot">
+        <div class="screenshot-placeholder">[ Screenshot journal ]</div>
+        <p>Journal des changements de zone en temps réel</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CHANGELOG -->
+<section id="changelog">
+  <div class="container">
+    <h2 class="section-title">Changelog</h2>
+    <p class="section-sub">Historique des mises à jour.</p>
+
+    <div class="changelog-entry">
+      <div class="ver">v1.1</div>
+      <div class="date">Mars 2026</div>
+      <ul>
+        <li>Musiques de combat spécifiques par zone (Frigost, Sufokia, Saharach, Astrub...)</li>
+        <li>Alternance aléatoire entre plusieurs musiques de combat génériques</li>
+        <li>Musique de donjon générique pour tous les donjons</li>
+        <li>Correction de la détection Brakmar / Bonta (faubourgs)</li>
+        <li>Nouvelle zone Brakmar Bordure avec sa propre musique</li>
+        <li>Saharach divisé en deux zones musicales (Dunes vs Cité/Pyramide)</li>
+        <li>Système de mise à jour automatique</li>
+        <li>Fenêtre flottante toujours au premier plan, style Dofus</li>
+      </ul>
+    </div>
+
+    <div class="changelog-entry">
+      <div class="ver">v1.0</div>
+      <div class="date">Mars 2026</div>
+      <ul>
+        <li>Version initiale</li>
+        <li>Détection des maps en temps réel via lecture mémoire</li>
+        <li>Support des musiques 1.29 et 2.0</li>
+        <li>Changement instantané de version sans redémarrage</li>
+        <li>Base de données de 14 437 maps</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <div class="container">
+    <h2 class="section-title">FAQ</h2>
+    <p class="section-sub">Questions fréquentes.</p>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggle(this)">Comment couper la musique de Dofus sans couper les effets sonores ? <span class="arrow">▼</span></div>
+      <div class="faq-a">Dans Dofus, ouvrez le menu Options (touche Échap) → Son → déplacez uniquement le curseur <strong>Musique</strong> à 0. Les curseurs Effets et Ambiance peuvent rester comme vous le souhaitez.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggle(this)">Avec quelle version de Dofus est-il compatible ? <span class="arrow">▼</span></div>
+      <div class="faq-a">Dofus Sound Manager est compatible avec <strong>Dofus 3</strong> (Unity). Il n'est pas compatible avec Dofus Rétro.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggle(this)">Pourquoi Windows affiche un avertissement de sécurité ? <span class="arrow">▼</span></div>
+      <div class="faq-a">Ce message apparaît pour tous les logiciels indépendants qui ne possèdent pas de certificat de signature payant. Cliquez sur <strong>"Informations complémentaires"</strong> puis <strong>"Exécuter quand même"</strong>. Le logiciel est entièrement sûr et open source.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggle(this)">Comment mettre à jour le logiciel ? <span class="arrow">▼</span></div>
+      <div class="faq-a">Le programme vérifie automatiquement les mises à jour à chaque démarrage. Si une nouvelle version est disponible, une notification apparaît avec un bouton de téléchargement direct.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggle(this)">Qu'est-ce que le MapId et comment le trouver ? <span class="arrow">▼</span></div>
+      <div class="faq-a">Le MapId est l'identifiant unique de la map où vous vous trouvez. Pour le connaître, tapez <strong>/mapid</strong> dans le chat de Dofus. Ce numéro est demandé une seule fois au démarrage pour calibrer la détection.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggle(this)">Le logiciel peut-il me faire bannir ? <span class="arrow">▼</span></div>
+      <div class="faq-a">Dofus Sound Manager lit uniquement la mémoire du jeu en lecture seule pour détecter la map actuelle. Il ne modifie aucun fichier du jeu et n'interagit pas avec les serveurs d'Ankama. Le risque est donc extrêmement faible, mais l'utilisation reste à vos propres risques.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggle(this)">Comment ajouter mes propres musiques ? <span class="arrow">▼</span></div>
+      <div class="faq-a">Sélectionnez la version <strong>Perso</strong> dans l'interface et indiquez un dossier contenant vos fichiers MP3 nommés par zone (ex: amakna.mp3, bonta.mp3, frigost.mp3...). La liste complète des noms de fichiers est disponible sur la page GitHub du projet.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggle(this)">Est-ce que ça fonctionne sur Mac ou Linux ? <span class="arrow">▼</span></div>
+      <div class="faq-a">Non, Dofus Sound Manager est actuellement <strong>Windows uniquement</strong>. La lecture mémoire utilisée pour détecter les maps repose sur des API Windows spécifiques.</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>Dofus Sound Manager — Projet indépendant, non affilié à Ankama</p>
+  <p style="margin-top: 8px;">
+    <a href="https://github.com/seuski/dofus-sound-manager" target="_blank">GitHub</a>
+    &nbsp;·&nbsp;
+    <a href="https://github.com/seuski/dofus-sound-manager/releases" target="_blank">Toutes les versions</a>
+  </p>
+</footer>
+
+<script>
+function toggle(el) {
+  el.classList.toggle('open');
+  const ans = el.nextElementSibling;
+  ans.classList.toggle('show');
+}
+
+document.querySelectorAll('nav a').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    document.querySelector(a.getAttribute('href')).scrollIntoView({behavior:'smooth'});
+  });
+});
+</script>
+</body>
+</html>
